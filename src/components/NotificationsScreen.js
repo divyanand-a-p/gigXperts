@@ -8,7 +8,6 @@ export default function NotificationsScreen({ currentUserProfile, setProfile }) 
     const [loading, setLoading] = useState(true);
 
     const fetchRequestProfiles = useCallback(async () => {
-        // Safety Check: Ensure connectionRequests is an array
         if (currentUserProfile.connectionRequests && currentUserProfile.connectionRequests.length > 0) {
             const profilePromises = currentUserProfile.connectionRequests.map(uid => getDoc(doc(db, 'users', uid)));
             const profileSnapshots = await Promise.all(profilePromises);
@@ -25,8 +24,6 @@ export default function NotificationsScreen({ currentUserProfile, setProfile }) 
     }, [fetchRequestProfiles]);
 
     const handleRequest = async (targetId, accept) => {
-        if (!targetId) return;
-
         const currentUserRef = doc(db, 'users', currentUserProfile.uid);
         const targetUserRef = doc(db, 'users', targetId);
         
@@ -49,27 +46,22 @@ export default function NotificationsScreen({ currentUserProfile, setProfile }) 
 
     return (
         <div className="space-y-3">
-            {requests.map(req => {
-                // Safety Check: Ensure the request object is valid
-                if (!req || !req.id) return null;
-
-                return (
-                    <div key={req.id} className="flex items-center justify-between p-3 bg-[#1e293b] rounded-lg">
-                        <div className="flex items-center">
-                             <img src={req.photoURL} alt={req.name} className="w-10 h-10 rounded-full mr-3"/>
-                            <span className="font-semibold">{req.name || "Unknown User"}</span>
-                        </div>
-                        <div className="flex space-x-2">
-                            <button onClick={() => handleRequest(req.id, true)} className="bg-green-500 w-10 h-10 rounded-full flex items-center justify-center hover:bg-green-400 transition-colors">
-                                <img src={icons.check} alt="accept" className="w-6 h-6"/>
-                            </button>
-                            <button onClick={() => handleRequest(req.id, false)} className="bg-red-500 w-10 h-10 rounded-full flex items-center justify-center hover:bg-red-400 transition-colors">
-                                <img src={icons.close} alt="decline" className="w-6 h-6"/>
-                            </button>
-                        </div>
+            {requests.map(req => (
+                <div key={req.id} className="flex items-center justify-between p-3 bg-[#1e293b] rounded-lg">
+                    <div className="flex items-center">
+                         <img src={req.photoURL} alt={req.name} className="w-10 h-10 rounded-full mr-3"/>
+                        <span className="font-semibold">{req.name}</span>
                     </div>
-                );
-            })}
+                    <div className="flex space-x-2">
+                        <button onClick={() => handleRequest(req.id, true)} className="bg-green-500 w-10 h-10 rounded-full flex items-center justify-center hover:bg-green-400 transition-colors">
+                            <img src={icons.check} alt="accept" className="w-6 h-6"/>
+                        </button>
+                        <button onClick={() => handleRequest(req.id, false)} className="bg-red-500 w-10 h-10 rounded-full flex items-center justify-center hover:bg-red-400 transition-colors">
+                            <img src={icons.close} alt="decline" className="w-6 h-6"/>
+                        </button>
+                    </div>
+                </div>
+            ))}
         </div>
     );
 }
