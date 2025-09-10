@@ -1,6 +1,6 @@
-import React, 'useState', useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { collection, query, where, onSnapshot, getDoc, doc } from 'firebase/firestore';
-import { db, auth } from '../firebase/config';
+import { db } from '../firebase/config';
 
 export default function MessagesScreen({ currentUser, setView, setViewData }) {
     const [chats, setChats] = useState([]);
@@ -13,9 +13,6 @@ export default function MessagesScreen({ currentUser, setView, setViewData }) {
         const unsubscribe = onSnapshot(q, async (snapshot) => {
             const chatPromises = snapshot.docs.map(async (doc) => {
                 const chatData = doc.data();
-                // Safety Check: Ensure chatData and participants exist
-                if (!chatData || !Array.isArray(chatData.participants)) return null;
-
                 const otherParticipantId = chatData.participants.find(p => p !== currentUser.uid);
                 if (otherParticipantId) {
                     const userDoc = await getDoc(doc(db, 'users', otherParticipantId));
@@ -42,20 +39,15 @@ export default function MessagesScreen({ currentUser, setView, setViewData }) {
     
     return (
         <div className="space-y-2">
-            {chats.map(chat => {
-                // Safety Check: Ensure chat and partner data are valid before rendering
-                if (!chat || !chat.partner) return null;
-
-                return (
-                    <div key={chat.id} onClick={() => { setViewData(chat.partner); setView('chat'); }} className="flex items-center p-3 bg-[#1e293b] rounded-lg cursor-pointer hover:bg-slate-600 transition-colors">
-                        <img src={chat.partner.photoURL || `https://placehold.co/48x48/1e293b/E0E1DD?text=${chat.partner.name.charAt(0)}`} alt={chat.partner.name} className="w-12 h-12 rounded-full mr-4"/>
-                        <div className="flex-grow overflow-hidden">
-                            <p className="font-bold">{chat.partner.name}</p>
-                            <p className="text-sm text-slate-400 truncate">{chat.lastMessage?.text || "Tap to start conversation"}</p>
-                        </div>
+            {chats.map(chat => (
+                <div key={chat.id} onClick={() => { setViewData(chat.partner); setView('chat'); }} className="flex items-center p-3 bg-[#1e293b] rounded-lg cursor-pointer hover:bg-slate-600 transition-colors">
+                    <img src={chat.partner.photoURL || https://placehold.co/48x48/1e293b/E0E1DD?text=${chat.partner.name.charAt(0)}} alt={chat.partner.name} className="w-12 h-12 rounded-full mr-4"/>
+                    <div className="flex-grow overflow-hidden">
+                        <p className="font-bold">{chat.partner.name}</p>
+                        <p className="text-sm text-slate-400 truncate">{chat.lastMessage?.text || 'Tap to start conversation'}</p>
                     </div>
-                );
-            })}
+                </div>
+            ))}
         </div>
     );
 }
