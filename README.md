@@ -1,70 +1,41 @@
-# Getting Started with Create React App
+✨ GigXperts ✨
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+🚀 Your College’s Exclusive Freelance & Collaboration Hub 🚀
 
-## Available Scripts
+GigXperts is a progressive web app built to spark a trusted micro-economy within your college campus. It’s designed to help students:
+🤝 Offer & discover freelance services
+👨‍💻 Team up for projects
+🌐 Connect with skilled peers in a safe, secure space.
 
-In the project directory, you can run:
+🌟 What You Can Do with GigXperts (MVP Features)
 
-### `npm start`
+🔑 Google Authentication
+Sign in quickly and securely using your official university Google account.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+👤 Skill-Based Profiles
+Create a profile that shows off your skills, bio, and contact info—your mini professional portfolio.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+📸 Service Discovery
+Easily browse through student services. For the MVP, we’re starting with Photography—because everyone needs that one friend with the perfect camera skills.
 
-### `npm test`
+🧑‍🤝‍🧑 Community Hub
+Find teammates, share ideas, and collaborate on projects or events—all in one central space.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+💬 Real-Time Chat
+No need to jump to WhatsApp or email. Chat directly in-app to discuss projects and negotiate terms instantly.
 
-### `npm run build`
+🔗 Connection System
+Just like LinkedIn, send and receive connection requests to grow your personal network within campus.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+💳 Payment Integration
+Got a deal? Wrap it up smoothly with Razorpay for secure and hassle-free payments.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+💻 Built With Modern Tech
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+React.js → A powerful library that makes the app smooth and responsive.
 
-### `npm run eject`
+Firebase → Our go-to for secure authentication and real-time Firestore database.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Tailwind CSS → Helps us design clean, modern, and consistent UI lightning-fast.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Razorpay → The trusted payment gateway for seamless transactions.
