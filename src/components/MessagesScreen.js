@@ -27,7 +27,6 @@ const MessagesScreen = ({ setScreen, setActiveChat }) => {
         });
 
         if (userIds.size > 0) {
-          // Firestore 'in' queries are limited to 10 items. We need to chunk the userIds array.
           const userIdsArray = Array.from(userIds);
           const userChunks = [];
           for (let i = 0; i < userIdsArray.length; i += 10) {
@@ -87,7 +86,6 @@ const MessagesScreen = ({ setScreen, setActiveChat }) => {
 
           const otherUser = users[otherUserId];
           if (!otherUser) {
-            // This can happen briefly while user data is loading, so we can show a placeholder.
             return null;
           }
           
