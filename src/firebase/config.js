@@ -2,7 +2,6 @@ import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
-// Your web app's Firebase configuration (as you provided)
 const firebaseConfig = {
   apiKey: "AIzaSyCJqBSK_xuQYMBmD5s5v-trAnnH10NMcZA",
   authDomain: "gigxperts-46aee.firebaseapp.com",
