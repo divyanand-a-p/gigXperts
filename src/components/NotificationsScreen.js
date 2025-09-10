@@ -65,3 +65,6 @@ export default function NotificationsScreen({ currentUserProfile, setProfile }) 
         </div>
     );
 }
+
+
+
