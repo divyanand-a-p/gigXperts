@@ -1,53 +1,100 @@
 import React, { useState, useEffect } from 'react';
-import { collection, query, where, onSnapshot, getDoc, doc } from 'firebase/firestore';
-import { db } from '../firebase/config';
+import { collection, query, where, onSnapshot, getDocs } from 'firebase/firestore';
+import { auth, db } from '../firebase/config';
 
-export default function MessagesScreen({ currentUser, setView, setViewData }) {
-    const [chats, setChats] = useState([]);
-    const [loading, setLoading] = useState(true);
+const MessagesScreen = ({ setScreen, setActiveChat }) => {
+  const [chats, setChats] = useState([]);
+  const [users, setUsers] = useState({});
+  const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const chatsRef = collection(db, 'chats');
-        const q = query(chatsRef, where('participants', 'array-contains', currentUser.uid));
-
-        const unsubscribe = onSnapshot(q, async (snapshot) => {
-            const chatPromises = snapshot.docs.map(async (doc) => {
-                const chatData = doc.data();
-                const otherParticipantId = chatData.participants.find(p => p !== currentUser.uid);
-                if (otherParticipantId) {
-                    const userDoc = await getDoc(doc(db, 'users', otherParticipantId));
-                    if (userDoc.exists()) {
-                        return { id: doc.id, ...chatData, partner: userDoc.data() };
-                    }
-                }
-                return null;
-            });
-            
-            const resolvedChats = (await Promise.all(chatPromises)).filter(Boolean);
-            resolvedChats.sort((a, b) => (b.lastMessage?.timestamp || 0) - (a.lastMessage?.timestamp || 0));
-            setChats(resolvedChats);
-            setLoading(false);
-        });
-        return () => unsubscribe();
-    }, [currentUser.uid]);
-
-    if (loading) return <p className="text-center text-slate-400">Loading messages...</p>;
-
-    if (chats.length === 0) {
-        return <p className="text-center text-slate-400 mt-10">No messages yet</p>;
+  useEffect(() => {
+    if (!auth.currentUser) {
+      setLoading(false);
+      return;
     }
-    
-    return (
-        <div className="space-y-2">
-            {chats.map(chat => (
-                <div key={chat.id} onClick={() => { setViewData(chat.partner); setView('chat'); }} className="flex items-center p-3 bg-[#1e293b] rounded-lg cursor-pointer hover:bg-slate-600 transition-colors">
-                    <img src={chat.partner.photoURL || `https://placehold.co/48x48/1e293b/E0E1DD?text=${chat.partner.name.charAt(0)}`} alt={chat.partner.name} className="w-12 h-12 rounded-full mr-4"/>
-                    <div className="flex-grow overflow-hidden">
-                        <p className="font-bold">{chat.partner.name}</p>
-                        <p className="text-sm text-slate-400 truncate">{chat.lastMessage?.text || 'Tap to start conversation'}</p>
-                    </div>
-                </div>
-            ))}
-        </div>
-    );
-}
+
+    const chatsQuery = query(collection(db, 'chats'), where('participants', 'array-contains', auth.currentUser.uid));
+
+    const unsubscribe = onSnapshot(chatsQuery, async (snapshot) => {
+      const chatsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+      if (!Array.isArray(chatsData)) {
+          setLoading(false);
+          return;
+      }
+      
+      const userIds = new Set();
+      chatsData.forEach(chat => {
+        if (chat.participants && Array.isArray(chat.participants)) {
+            chat.participants.forEach(uid => userIds.add(uid));
+        }
+      });
+      
+      if (userIds.size > 0) {
+        const usersQuery = query(collection(db, 'users'), where('uid', 'in', Array.from(userIds)));
+        const usersSnapshot = await getDocs(usersQuery);
+        const usersData = {};
+        usersSnapshot.forEach(doc => {
+          usersData[doc.data().uid] = doc.data();
+        });
+        setUsers(usersData);
+      }
+
+      setChats(chatsData);
+      setLoading(false);
+    }, (error) => {
+      console.error("Error fetching chats: ", error);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const handleChatClick = (chatId, otherUserId) => {
+    setActiveChat({ chatId, otherUserId });
+    setScreen('chat');
+  };
+
+  if (loading) {
+    return <div className="p-4 text-white text-center">Loading messages...</div>;
+  }
+
+  if (chats.length === 0) {
+    return <div className="p-4 text-white text-center">No messages yet.</div>;
+  }
+
+  return (
+    <div className="p-4 flex flex-col h-full text-white">
+      <h1 className="text-2xl font-bold mb-4">Messages</h1>
+      <div className="flex-grow overflow-y-auto">
+        {chats.map(chat => {
+          if (!chat.participants || !Array.isArray(chat.participants)) {
+            return null; 
+          }
+
+          const otherUserId = chat.participants.find(uid => uid !== auth.currentUser.uid);
+          if (!otherUserId) return null;
+
+          const otherUser = users[otherUserId];
+          if (!otherUser) return null; 
+          
+          return (
+            <div
+              key={chat.id}
+              onClick={() => handleChatClick(chat.id, otherUserId)}
+              className="flex items-center p-3 mb-2 bg-slate-700 rounded-lg cursor-pointer hover:bg-slate-600 transition-colors"
+            >
+              <img src={otherUser.photoURL || `https://ui-avatars.com/api/?name=${otherUser.displayName}&background=0ea5e9&color=fff`} alt={otherUser.displayName} className="w-12 h-12 rounded-full mr-4" />
+              <div>
+                <p className="font-semibold">{otherUser.displayName}</p>
+                <p className="text-sm text-gray-400 truncate">{chat.lastMessage?.text || "..."}</p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+export default MessagesScreen;
