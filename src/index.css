@@ -1,0 +1,9 @@
+body {
+  background-color: #0f172a; /* Dark blue-slate background */
+  color: #e2e8f0; /* Light text color for contrast */
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

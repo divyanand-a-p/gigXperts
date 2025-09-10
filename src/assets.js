@@ -1,0 +1,27 @@
+const createIconUrl = (name) => `https://icongr.am/lucide/${name}.svg?size=48&color=ffffff`;
+
+export const icons = {
+    writer: createIconUrl('pencil'),
+    coding: createIconUrl('code-2'),
+    video: createIconUrl('clapperboard'),
+    photography: createIconUrl('camera'),
+    poster: createIconUrl('image'),
+    presentation: createIconUrl('presentation'),
+    project: createIconUrl('wrench'),
+    google: "https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg",
+    home: createIconUrl('home'),
+    community: createIconUrl('users-2'),
+    messages: createIconUrl('message-square'),
+    profile: createIconUrl('user-circle-2'),
+    bell: createIconUrl('bell'),
+    back: createIconUrl('arrow-left'),
+    menu: createIconUrl('menu'),
+    edit: createIconUrl('edit'),
+    close: createIconUrl('x'),
+    send: createIconUrl('send'),
+    check: createIconUrl('check'),
+    star: createIconUrl('star'),
+    fee: createIconUrl('dollar-sign'),
+    plus: createIconUrl('plus'),
+    info: createIconUrl('info'),
+};
