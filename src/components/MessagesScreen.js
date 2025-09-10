@@ -16,34 +16,44 @@ const MessagesScreen = ({ setScreen, setActiveChat }) => {
     const chatsQuery = query(collection(db, 'chats'), where('participants', 'array-contains', auth.currentUser.uid));
 
     const unsubscribe = onSnapshot(chatsQuery, async (snapshot) => {
-      const chatsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      try {
+        const chatsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-      if (!Array.isArray(chatsData)) {
-          setLoading(false);
-          return;
-      }
-      
-      const userIds = new Set();
-      chatsData.forEach(chat => {
-        if (chat.participants && Array.isArray(chat.participants)) {
+        const userIds = new Set();
+        chatsData.forEach(chat => {
+          if (chat.participants && Array.isArray(chat.participants)) {
             chat.participants.forEach(uid => userIds.add(uid));
-        }
-      });
-      
-      if (userIds.size > 0) {
-        const usersQuery = query(collection(db, 'users'), where('uid', 'in', Array.from(userIds)));
-        const usersSnapshot = await getDocs(usersQuery);
-        const usersData = {};
-        usersSnapshot.forEach(doc => {
-          usersData[doc.data().uid] = doc.data();
+          }
         });
-        setUsers(usersData);
-      }
 
-      setChats(chatsData);
-      setLoading(false);
+        if (userIds.size > 0) {
+          // Firestore 'in' queries are limited to 10 items. We need to chunk the userIds array.
+          const userIdsArray = Array.from(userIds);
+          const userChunks = [];
+          for (let i = 0; i < userIdsArray.length; i += 10) {
+            userChunks.push(userIdsArray.slice(i, i + 10));
+          }
+
+          const usersData = {};
+          // Execute a query for each chunk of user IDs
+          for (const chunk of userChunks) {
+            const usersQuery = query(collection(db, 'users'), where('uid', 'in', chunk));
+            const usersSnapshot = await getDocs(usersQuery);
+            usersSnapshot.forEach(doc => {
+              usersData[doc.data().uid] = doc.data();
+            });
+          }
+          setUsers(usersData);
+        }
+
+        setChats(chatsData);
+      } catch (error) {
+        console.error("Error processing chat data: ", error);
+      } finally {
+        setLoading(false);
+      }
     }, (error) => {
-      console.error("Error fetching chats: ", error);
+      console.error("Error fetching chats snapshot: ", error);
       setLoading(false);
     });
 
@@ -68,7 +78,7 @@ const MessagesScreen = ({ setScreen, setActiveChat }) => {
       <h1 className="text-2xl font-bold mb-4">Messages</h1>
       <div className="flex-grow overflow-y-auto">
         {chats.map(chat => {
-          if (!chat.participants || !Array.isArray(chat.participants)) {
+          if (!chat || !chat.participants || !Array.isArray(chat.participants)) {
             return null; 
           }
 
@@ -76,7 +86,10 @@ const MessagesScreen = ({ setScreen, setActiveChat }) => {
           if (!otherUserId) return null;
 
           const otherUser = users[otherUserId];
-          if (!otherUser) return null; 
+          if (!otherUser) {
+            // This can happen briefly while user data is loading, so we can show a placeholder.
+            return null;
+          }
           
           return (
             <div
@@ -84,9 +97,9 @@ const MessagesScreen = ({ setScreen, setActiveChat }) => {
               onClick={() => handleChatClick(chat.id, otherUserId)}
               className="flex items-center p-3 mb-2 bg-slate-700 rounded-lg cursor-pointer hover:bg-slate-600 transition-colors"
             >
-              <img src={otherUser.photoURL || `https://ui-avatars.com/api/?name=${otherUser.displayName}&background=0ea5e9&color=fff`} alt={otherUser.displayName} className="w-12 h-12 rounded-full mr-4" />
+              <img src={otherUser.photoURL || `https://ui-avatars.com/api/?name=${otherUser.displayName}&background=0ea5e9&color=fff`} alt={otherUser.displayName || ''} className="w-12 h-12 rounded-full mr-4" />
               <div>
-                <p className="font-semibold">{otherUser.displayName}</p>
+                <p className="font-semibold">{otherUser.displayName || 'User'}</p>
                 <p className="text-sm text-gray-400 truncate">{chat.lastMessage?.text || "..."}</p>
               </div>
             </div>
