@@ -2,9 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from 'firebase/auth';
 import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, updateDoc, arrayUnion, arrayRemove, onSnapshot, addDoc, serverTimestamp, orderBy } from 'firebase/firestore';
-
-// --- Firebase Configuration ---
-// This is the configuration you provided.
 const firebaseConfig = {
     apiKey: "AIzaSyCJqBSK_xuQYMBmD5s5v-trAnnH10NMcZA",
     authDomain: "gigxperts-46aee.firebaseapp.com",
@@ -14,13 +11,11 @@ const firebaseConfig = {
     appId: "1:63003889769:web:f58319dbad2735cad692f8"
 };
 
-// --- Initialize Firebase ---
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
-// --- Main App Component ---
 export default function App() {
     const [user, setUser] = useState(null);
     const [profile, setProfile] = useState(null);
@@ -30,7 +25,7 @@ export default function App() {
     const [viewData, setViewData] = useState(null); // Data for the sub-page
     const [toast, setToast] = useState(''); // For "Coming Soon" messages
 
-    // --- Authentication Listener ---
+
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
             if (currentUser) {
